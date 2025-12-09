@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TensorFlow Beginner's Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            color: #e8e8e8;
+            padding: 1%;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            padding: 12px 1%;
+            border-radius: 8px;
+            margin-bottom: 1%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: 1.3em;
+            color: #fff;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 1%;
+            margin-bottom: 1%;
+            padding: 1%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tab-btn {
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+            color: #fff;
+            border: 2px solid #ff6b35;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            border-color: #f7931e;
+            transform: scale(1.05);
+        }
+        
+        .content-section {
+            display: none;
+            background: rgba(22, 33, 62, 0.8);
+            padding: 1%;
+            border-radius: 8px;
+            margin-bottom: 1%;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            font-size: 1.1em;
+            color: #ff6b35;
+            margin: 1% 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ff6b35;
+        }
+        
+        h3 {
+            font-size: 1em;
+            color: #f7931e;
+            margin: 1% 0;
+        }
+        
+        p {
+            margin: 1% 0;
+            font-size: 0.95em;
+        }
+        
+        code {
+            background: #0a1929;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #4fc3f7;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #0a1929;
+            padding: 1%;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1% 0;
+            border-left: 3px solid #ff6b35;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            display: block;
+            white-space: pre;
+        }
+        
+        ul {
+            margin: 1% 0 1% 4%;
+        }
+        
+        li {
+            margin: 1% 0;
+            font-size: 0.95em;
+        }
+        
+        .tip {
+            background: rgba(79, 195, 247, 0.1);
+            border-left: 4px solid #4fc3f7;
+            padding: 1%;
+            margin: 1% 0;
+            border-radius: 4px;
+        }
+        
+        .warning {
+            background: rgba(255, 107, 53, 0.1);
+            border-left: 4px solid #ff6b35;
+            padding: 1%;
+            margin: 1% 0;
+            border-radius: 4px;
+        }
+        
+        .example {
+            background: rgba(247, 147, 30, 0.1);
+            padding: 1%;
+            margin: 1% 0;
+            border-radius: 6px;
+            border: 1px solid rgba(247, 147, 30, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔥 TensorFlow Beginner's Guide</h1>
+        </header>
+        
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('intro')">Intro</button>
+            <button class="tab-btn" onclick="showTab('install')">Install</button>
+            <button class="tab-btn" onclick="showTab('basics')">Basics</button>
+            <button class="tab-btn" onclick="showTab('tensors')">Tensors</button>
+            <button class="tab-btn" onclick="showTab('operations')">Operations</button>
+            <button class="tab-btn" onclick="showTab('data')">Data</button>
+            <button class="tab-btn" onclick="showTab('preprocessing')">Preprocess</button>
+            <button class="tab-btn" onclick="showTab('models')">Models</button>
+            <button class="tab-btn" onclick="showTab('layers')">Layers</button>
+            <button class="tab-btn" onclick="showTab('activation')">Activations</button>
+            <button class="tab-btn" onclick="showTab('training')">Training</button>
+            <button class="tab-btn" onclick="showTab('optimization')">Optimize</button>
+            <button class="tab-btn" onclick="showTab('losses')">Losses</button>
+            <button class="tab-btn" onclick="showTab('metrics')">Metrics</button>
+            <button class="tab-btn" onclick="showTab('callbacks')">Callbacks</button>
+            <button class="tab-btn" onclick="showTab('examples')">Examples</button>
+            <button class="tab-btn" onclick="showTab('advanced')">Advanced</button>
+            <button class="tab-btn" onclick="showTab('transfer')">Transfer</button>
+            <button class="tab-btn" onclick="showTab('save')">Save/Load</button>
+            <button class="tab-btn" onclick="showTab('debugging')">Debug</button>
+            <button class="tab-btn" onclick="showTab('performance')">Speed</button>
+            <button class="tab-btn" onclick="showTab('bestpractices')">Best</button>
+            <button class="tab-btn" onclick="showTab('resources')">Resources</button>
+        </div>
+        
+        <div id="intro" class="content-section active">
+            <h2>What is TensorFlow?</h2>
+            <p>TensorFlow is an open-source machine learning framework developed by Google. It allows you to build and train neural networks for various tasks like image recognition, natural language processing, and more.</p>
+            
+            <h3>Key Features</h3>
+            <ul>
+                <li>End-to-end ML platform</li>
+                <li>Flexible architecture</li>
+                <li>Multiple language support (Python, JavaScript, C++)</li>
+                <li>Production deployment ready</li>
+                <li>Large community and resources</li>
+            </ul>
+            
+            <div class="tip">
+                <strong>💡 Tip:</strong> TensorFlow 2.x is much easier to use than 1.x with its eager execution and Keras integration!
+            </div>
+        </div>
+        
+        <div id="install" class="content-section">
+            <h2>Installation</h2>
+            
+            <h3>Python Installation</h3>
+            <p>Install TensorFlow using pip:</p>
+            <pre><code>pip install tensorflow</code></pre>
+            
+            <h3>Verify Installation</h3>
+            <pre><code>import tensorflow as tf
+print(tf.__version__)
+print("Num GPUs:", len(tf.config.list_physical_devices('GPU')))</code></pre>
+            
+            <h3>System Requirements</h3>
+            <ul>
+                <li>Python 3.8-3.11</li>
+                <li>pip 19.0 or later</li>
+                <li>Windows 7+, macOS 10.12.6+, or Ubuntu 16.04+</li>
+            </ul>
+            
+            <div class="warning">
+                <strong>⚠️ Note:</strong> GPU support requires additional CUDA and cuDNN installations. Start with CPU version for learning.
+            </div>
+        </div>
+        
+        <div id="basics" class="content-section">
+            <h2>TensorFlow Basics</h2>
+            
+            <h3>Import Convention</h3>
+            <pre><code>import tensorflow as tf
+import numpy as np</code></pre>
+            
+            <h3>Basic Operations</h3>
+            <div class="example">
+                <pre><code># Simple addition
+a = tf.constant(2)
+b = tf.constant(3)
+c = tf.add(a, b)
+print(c)  # Output: tf.Tensor(5, shape=(), dtype=int32)</code></pre>
+            </div>
+            
+            <h3>Data Types</h3>
+            <ul>
+                <li><code>tf.float32</code> - 32-bit float</li>
+                <li><code>tf.int32</code> - 32-bit integer</li>
+                <li><code>tf.bool</code> - Boolean</li>
+                <li><code>tf.string</code> - String</li>
+            </ul>
+            
+            <div class="tip">
+                <strong>💡 Tip:</strong> Always specify data types explicitly to avoid type conversion issues!
+            </div>
+        </div>
+        
+        <div id="tensors" class="content-section">
+            <h2>Understanding Tensors</h2>
+            
+            <h3>What is a Tensor?</h3>
+            <p>A tensor is a multi-dimensional array. Think of it as a generalization of matrices to higher dimensions.</p>
+            
+            <h3>Tensor Ranks</h3>
+            <ul>
+                <li><strong>Rank 0:</strong> Scalar (single number)</li>
+                <li><strong>Rank 1:</strong> Vector (1D array)</li>
+                <li><strong>Rank 2:</strong> Matrix (2D array)</li>
+                <li><strong>Rank 3+:</strong> Higher-dimensional tensors</li>
+            </ul>
+            
+            <h3>Creating Tensors</h3>
+            <div class="example">
+                <pre><code># Scalar
+scalar = tf.constant(7)
+
+# Vector
+vector = tf.constant([1, 2, 3, 4])
+
+# Matrix
+matrix = tf.constant([[1, 2], [3, 4]])
+
+# 3D Tensor
+tensor_3d = tf.constant([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+
+print(f"Shape: {tensor_3d.shape}")
+print(f"Rank: {tf.rank(tensor_3d).numpy()}")</code></pre>
+            </div>
+            
+            <h3>Special Tensors</h3>
+            <pre><code># All zeros
+zeros = tf.zeros([3, 3])
+
+# All ones
+ones = tf.ones([2, 4])
+
+# Identity matrix
+identity = tf.eye(3)
+
+# Random normal
+random_normal = tf.random.normal([3, 3], mean=0, stddev=1)
+
+# Random uniform
+random_uniform = tf.random.uniform([2, 2], minval=0, maxval=1)</code></pre>
+            
+            <h3>Tensor Properties</h3>
+            <pre><code>t = tf.constant([[1, 2, 3], [4, 5, 6]])
+
+print(t.shape)        # Shape: (2, 3)
+print(t.dtype)        # Data type: int32
+print(t.numpy())      # Convert to numpy
+print(tf.size(t))     # Total elements: 6</code></pre>
+            
+            <div class="tip">
+                <strong>💡 Pro Tip:</strong> Use <code>.numpy()</code> to convert tensors to NumPy arrays for debugging or visualization!
+            </div>
+        </div>
+        
+        <div id="operations" class="content-section">
+            <h2>Tensor Operations</h2>
+            
+            <h3>Arithmetic Operations</h3>
+            <div class="example">
+                <pre><code>a = tf.constant([1, 2, 3])
+b = tf.constant([4, 5, 6])
+
+# Element-wise operations
+add = tf.add(a, b)           # or a + b
+subtract = tf.subtract(a, b)  # or a - b
+multiply = tf.multiply(a, b)  # or a * b
+divide = tf.divide(a, b)      # or a / b
+
+# Power and sqrt
+power = tf.pow(a, 2)
+sqrt = tf.sqrt(tf.cast(a, tf.float32))</code></pre>
+            </div>
+            
+            <h3>Matrix Operations</h3>
+            <pre><code>A = tf.constant([[1, 2], [3, 4]], dtype=tf.float32)
+B = tf.constant([[5, 6], [7, 8]], dtype=tf.float32)
+
+# Matrix multiplication
+matmul = tf.matmul(A, B)
+
+# Transpose
+transpose = tf.transpose(A)
+
+# Determinant
+det = tf.linalg.det(A)
+
+# Inverse
+inv = tf.linalg.inv(A)</code></pre>
+            
+            <h3>Reshaping Operations</h3>
+            <pre><code>tensor = tf.constant([[1, 2, 3, 4], [5, 6, 7, 8]])
+
+# Reshape
+reshaped = tf.reshape(tensor, [4, 2])
+
+# Flatten
+flattened = tf.reshape(tensor, [-1])
+
+# Expand dimensions
+expanded = tf.expand_dims(tensor, axis=0)
+
+# Squeeze
+squeezed = tf.squeeze(expanded)</code></pre>
+            
+            <h3>Indexing and Slicing</h3>
+            <div class="example">
+                <pre><code>t = tf.constant([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+# Basic indexing
+print(t[0])           # First row
+print(t[:, 1])        # Second column
+print(t[1:3, 0:2])    # Submatrix
+
+# Advanced indexing
+indices = tf.constant([[0, 0], [1, 1], [2, 2]])
+values = tf.gather_nd(t, indices)  # Diagonal elements</code></pre>
+            </div>
+            
+            <h3>Reduction Operations</h3>
+            <pre><code>tensor = tf.constant([[1, 2, 3], [4, 5, 6]], dtype=tf.float32)
+
+# Sum
+total = tf.reduce_sum(tensor)
+row_sum = tf.reduce_sum(tensor, axis=1)
+col_sum = tf.reduce_sum(tensor, axis=0)
+
+# Mean
+mean = tf.reduce_mean(tensor)
+
+# Max and Min
+maximum = tf.reduce_max(tensor)
+minimum = tf.reduce_min(tensor)
+
+# Argmax and Argmin
+argmax = tf.argmax(tensor, axis=1)</code></pre>
+            
+            <div class="tip">
+                <strong>💡 Remember:</strong> Axis 0 is rows, Axis 1 is columns. Use <code>axis=None</code> for operations on entire tensor!
+            </div>
+        </div>
+        
+        <div id="data" class="content-section">
+            <h2>Data Loading & Preprocessing</h2>
+            
+            <h3>Step 1: Loading Built-in Datasets</h3>
+            <div class="example">
+                <pre><code># MNIST digits
+(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+
+# Fashion MNIST
+(x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
+
+# CIFAR-10
+(x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
+
+# IMDB reviews
+(x_train, y_train), (x_test, y_test) = keras.datasets.imdb.load_data()</code></pre>
+            </div>
+            
+            <h3>Step 2: Data Normalization</h3>
+            <pre><code># Scale pixel values to [0, 1]
+x_train = x_train.astype('float32') / 255.0
+x_test = x_test.astype('float32') / 255.0
+
+# Standardization (mean=0, std=1)
+mean = np.mean(x_train, axis=0)
+std = np.std(x_train, axis=0)
+x_train = (x_train - mean) / (std + 1e-7)
+x_test = (x_test - mean) / (std + 1e-7)</code></pre>
+            
+            <h3>Step 3: Creating tf.data.Dataset</h3>
+            <div class="example">
+                <pre><code># From tensors
+dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+
+# Shuffle, batch, and prefetch
+dataset = dataset.shuffle(buffer_size=10000)
+dataset = dataset.batch(32)
+dataset = dataset.prefetch(tf.data.AUTOTUNE)
+
+# Iterate through dataset
+for x_batch, y_batch in dataset.take(1):
+    print(f"Batch shape: {x_batch.shape}")</code></pre>
+            </div>
+            
+            <h3>Step 4: Data Augmentation</h3>
+            <pre><code># Image augmentation layer
+data_augmentation = keras.Sequential([
+    keras.layers.RandomFlip("horizontal"),
+    keras.layers.RandomRotation(0.1),
+    keras.layers.RandomZoom(0.1),
+    keras.layers.RandomContrast(0.1)
+])
+
+# Apply augmentation
+augmented_images = data_augmentation(images, training=True)</code></pre>
+            
+            <h3>Step 5: Custom Data Generator</h3>
+            <div class="example">
+                <pre><code>def data_generator():
+    while True:
+        # Generate or load batch
+        x_batch = np.random.rand(32, 28, 28)
+        y_batch = np.random.randint(0, 10, 32)
+        yield x_batch, y_batch
+
+dataset = tf.data.Dataset.from_generator(
+    data_generator,
+    output_signature=(
+        tf.TensorSpec(shape=(32, 28, 28), dtype=tf.float32),
+        tf.TensorSpec(shape=(32,), dtype=tf.int32)
+    )
+)</code></pre>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Important:</strong> Always shuffle training data and use <code>prefetch()</code> to improve performance!
+            </div>
+        </div>
+        
+        <div id="models" class="content-section">
+            <h2>Building Models - Step by Step</h2>
+            
+            <h3>Step 1: Choose Model Architecture</h3>
+            <p>Three ways to build models in TensorFlow:</p>
+            
+            <h3>Method A: Sequential API (Easiest)</h3>
+            <div class="example">
+                <pre><code>from tensorflow import keras
+
+# Step-by-step model building
+model = keras.Sequential()
+
+# Add input layer
+model.add(keras.layers.Dense(128, activation='relu', input_shape=(784,)))
+
+# Add hidden layers
+model.add(keras.layers.Dropout(0.2))
+model.add(keras.layers.Dense(64, activation='relu'))
+model.add(keras.layers.Dropout(0.2))
+
+# Add output layer
+model.add(keras.layers.Dense(10, activation='softmax'))
+
+# View model structure
+model.summary()</code></pre>
+            </div>
+            
+            <h3>Method B: Sequential API (Compact)</h3>
+            <div class="example">
+                <pre><code>model = keras.Sequential([
+    keras.layers.Dense(128, activation='relu', input_shape=(784,)),
+    keras.layers.Dropout(0.2),
+    keras.layers.Dense(64, activation='relu'),
+    keras.layers.Dropout(0.2),
+    keras.layers.Dense(10, activation='softmax')
+])</code></pre>
+            </div>
+            
+            <h3>Method C: Functional API (Most Flexible)</h3>
+            <div class="example">
+                <pre><code># Define input
+inputs = keras.Input(shape=(784,))
+
+# Build layers
+x = keras.layers.Dense(128, activation='relu')(inputs)
+x = keras.layers.Dropout(0.2)(x)
+x = keras.layers.Dense(64, activation='relu')(x)
+x = keras.layers.Dropout(0.2)(x)
+outputs = keras.layers.Dense(10, activation='softmax')(x)
+
+# Create model
+model = keras.Model(inputs=inputs, outputs=outputs, name='my_model')</code></pre>
+            </div>
+            
+            <h3>Step 2: Compile the Model</h3>
+            <pre><code># Choose optimizer, loss, and metrics
+model.compile(
+    optimizer='adam',              # or 'sgd', 'rmsprop'
+    loss='sparse_categorical_crossentropy',  # for integer labels
+    # loss='categorical_crossentropy',  # for one-hot labels
+    # loss='binary_crossentropy',       # for binary classification
+    # loss='mse',                        # for regression
+    metrics=['accuracy']
+)
+
+# Custom learning rate
+model.compile(
+    optimizer=keras.optimizers.Adam(learning_rate=0.001),
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)</code></pre>
+            
+            <div class="tip">
+                <strong>💡 Quick Guide:</strong><br>
+                • Classification (2 classes): binary_crossentropy<br>
+                • Classification (>2 classes): categorical_crossentropy<br>
+                • Regression: mse or mae<br>
+                • Use sparse_ version if labels are integers
+            </div>
+        </div>
+        
+        <div id="layers" class="content-section">
+            <h2>Complete Layer Guide</h2>
+            
+            <h3>Core Layers</h3>
+            
+            <h3>Dense Layer (Fully Connected)</h3>
+            <div class="example">
+                <pre><code># Basic usage
+keras.layers.Dense(
+    units=64,                    # Number of neurons
+    activation='relu',           # Activation function
+    use_bias=True,              # Include bias term
+    kernel_initializer='glorot_uniform',
+    bias_initializer='zeros'
+)</code></pre>
+            </div>
+            
+            <h3>Convolutional Layers (For Images)</h3>
+            <pre><code># 2D Convolution
+keras.layers.Conv2D(
+    filters=32,                  # Number of filters
+    kernel_size=(3, 3),         # Filter size
+    strides=(1, 1),             # Step size
+    padding='same',             # 'valid' or 'same'
+    activation='relu'
+)
+
+# Max Pooling
+keras.layers.MaxPooling2D(
+    pool_size=(2, 2),           # Pooling window
+    strides=(2, 2)
+)
+
+# Average Pooling
+keras.layers.AveragePooling2D(pool_size=(2, 2))</code></pre>
+            
+            <h3>Recurrent Layers (For Sequences)</h3>
+            <div class="example">
+                <pre><code># LSTM Layer
+keras.layers.LSTM(
+    units=128,                   # Number of LSTM cells
+    return_sequences=True,      # Return full sequence
+    dropout=0.2,                # Dropout rate
+    recurrent_dropout=0.2
+)
+
+# GRU Layer
+keras.layers.GRU(units=64, return_sequences=False)
+
+# Simple RNN
+keras.layers.SimpleRNN(units=32)</code></pre>
+            </div>
+            
+            <h3>Regularization Layers</h3>
+            <pre><code># Dropout
+keras.layers.Dropout(0.5)       # Drop 50% of neurons
+
+# Batch Normalization
+keras.layers.BatchNormalization()
+
+# Layer Normalization
+keras.layers.LayerNormalization()</code></pre>
+            
+            <h3>Activation Layers</h3>
+            <pre><code>keras.layers.Activation('relu')
+keras.layers.Activation('sigmoid')
+keras.layers.Activation('tanh')
+keras.layers.Activation('softmax')
+keras.layers.LeakyReLU(alpha=0.3)
+keras.layers.ELU(alpha=1.0)</code></pre>
+            
+            <h3>Utility Layers</h3>
+            <div class="example">
+                <pre><code># Flatten
+keras.layers.Flatten()
+
+# Reshape
+keras.layers.Reshape(target_shape=(7, 7, 64))
+
+# Concatenate
+keras.layers.Concatenate(axis=-1)
+
+# Add
+keras.layers.Add()
+
+# Global Average Pooling
+keras.layers.GlobalAveragePooling2D()</code></pre>
+            </div>
+            
+            <h3>Embedding Layer (For Text)</h3>
+            <pre><code>keras.layers.Embedding(
+    input_dim=10000,            # Vocabulary size
+    output_dim=128,             # Embedding dimension
+    input_length=100            # Sequence length
+)</code></pre>
+            
+            <div class="tip">
+                <strong>💡 Layer Selection Tips:</strong><br>
+                • Dense: General-purpose, fully connected<br>
+                • Conv2D: Images, spatial patterns<br>
+                • LSTM/GRU: Time series, text sequences<br>
+                • Dropout: Prevent overfitting<br>
+                • BatchNorm: Speed up training, stabilize
+            </div>
+        </div>
+        
+        <div id="training" class="content-section">
+            <h2>Training Models - Complete Guide</h2>
+            
+            <h3>Step 1: Prepare Your Data</h3>
+            <div class="example">
+                <pre><code># Load and preprocess data
+(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+
+# Reshape if needed
+x_train = x_train.reshape(-1, 784).astype('float32') / 255
+x_test = x_test.reshape(-1, 784).astype('float32') / 255
+
+# Check shapes
+print(f"Training data: {x_train.shape}, {y_train.shape}")
+print(f"Test data: {x_test.shape}, {y_test.shape}")</code></pre>
+            </div>
+            
+            <h3>Step 2: Split Validation Set</h3>
+            <pre><code># Option 1: Use validation_split
+history = model.fit(
+    x_train, y_train,
+    validation_split=0.2,       # Use 20% for validation
+    epochs=10
+)
+
+# Option 2: Create separate validation set
+from sklearn.model_selection import train_test_split
+x_train, x_val, y_train, y_val = train_test_split(
+    x_train, y_train, test_size=0.2, random_state=42
+)
+
+history = model.fit(
+    x_train, y_train,
+    validation_data=(x_val, y_val),
+    epochs=10
+)</code></pre>
+            
+            <h3>Step 3: Configure Training Parameters</h3>
+            <div class="example">
+                <pre><code># Full training configuration
+history = model.fit(
+    x_train, y_train,
+    batch_size=32,              # Samples per gradient update
+    epochs=50,                  # Number of full passes
+    validation_split=0.2,       # Validation percentage
+    verbose=1,                  # 0=silent, 1=progress, 2=one line
+    shuffle=True                # Shuffle training data
+)</code></pre>
+            </div>
+            
+            <h3>Step 4: Use Callbacks</h3>
+            <pre><code># Early Stopping - stops when no improvement
+early_stop = keras.callbacks.EarlyStopping(
+    monitor='val_loss',         # Metric to monitor
+    patience=5,                 # Epochs with no improvement
+    restore_best_weights=True,  # Restore best weights
+    verbose=1
+)
+
+# Model Checkpoint - saves best model
+checkpoint = keras.callbacks.ModelCheckpoint(
+    'best_model.h5',
+    monitor='val_accuracy',
+    save_best_only=True,
+    mode='max',
+    verbose=1
+)
+
+# Reduce Learning Rate - when plateau
+reduce_lr = keras.callbacks.ReduceLROnPlateau(
+    monitor='val_loss',
+    factor=0.5,                 # New LR = LR * factor
+    patience=3,
+    min_lr=1e-7,
+    verbose=1
+)
+
+# TensorBoard - visualization
+tensorboard = keras.callbacks.TensorBoard(
+    log_dir='./logs',
+    histogram_freq=1
+)
+
+# Train with callbacks
+history = model.fit(
+    x_train, y_train,
+    validation_split=0.2,
+    epochs=100,
+    callbacks=[early_stop, checkpoint, reduce_lr, tensorboard]
+)</code></pre>
+            
+            <h3>Step 5: Monitor Training Progress</h3>
+            <div class="example">
+                <pre><code># Access training history
+print("Training accuracy:", history.history['accuracy'])
+print("Validation accuracy:", history.history['val_accuracy'])
+print("Training loss:", history.history['loss'])
+print("Validation loss:", history.history['val_loss'])
+
+# Find best epoch
+best_epoch = np.argmax(history.history['val_accuracy'])
+print(f"Best epoch: {best_epoch + 1}")
+print(f"Best val accuracy: {history.history['val_accuracy'][best_epoch]}")</code></pre>
+            </div>
+            
+            <h3>Step 6: Evaluate Model</h3>
+            <pre><code># Evaluate on test set
+test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0)
+print(f"Test accuracy: {test_acc:.4f}")
+print(f"Test loss: {test_loss:.4f}")
+
+# Detailed evaluation
+predictions = model.predict(x_test)
+predicted_classes = np.argmax(predictions, axis=1)
+
+# Calculate metrics
+from sklearn.metrics import classification_report, confusion_matrix
+print(classification_report(y_test, predicted_classes))
+print(confusion_matrix(y_test, predicted_classes))</code></pre>
+            
+            <h3>Step 7: Make Predictions</h3>
+            <div class="example">
+                <pre><code># Predict on new data
+new_predictions = model.predict(x_test[:5])
+print("Raw predictions:", new_predictions)
+
+# Get class predictions
+predicted_classes = np.argmax(new_predictions, axis=1)
+print("Predicted classes:", predicted_classes)
+
+# Get probabilities for specific class
+class_0_prob = new_predictions[:, 0]
+print("Probability of class 0:", class_0_prob)</code></pre>
+            </div>
+            
+            <h3>Step 8: Save and Load Models</h3>
+            <pre><code># Save entire model
+model.save('my_model.h5')
+model.save('my_model.keras')  # New format
+
+# Load model
+loaded_model = keras.models.load_model('my_model.h5')
+
+# Save only weights
+model.save_weights('model_weights.h5')
+
+# Load weights
+model.load_weights('model_weights.h5')</code></pre>
+            
+            <div class="warning">
+                <strong>⚠️ Training Checklist:</strong><br>
+                ✓ Normalize/standardize data<br>
+                ✓ Split train/validation/test sets<br>
+                ✓ Use callbacks (EarlyStopping, ModelCheckpoint)<br>
+                ✓ Monitor both training and validation metrics<br>
+                ✓ Save best model during training<br>
+                ✓ Evaluate on test set (only once!)
+            </div>
+        </div>
+        
+        <div id="optimization" class="content-section">
+            <h2>Optimization Techniques</h2>
+            
+            <h3>Choosing Optimizers</h3>
+            <div class="example">
+                <pre><code># Adam (Default choice - usually best)
+keras.optimizers.Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999)
+
+# SGD with momentum
+keras.optimizers.SGD(learning_rate=0.01, momentum=0.9)
+
+# RMSprop (Good for RNNs)
+keras.optimizers.RMSprop(learning_rate=0.001)
+
+# AdaGrad
+keras.optimizers.Adagrad(learning_rate=0.01)
+
+# Adamax
+keras.optimizers.Adamax(learning_rate=0.002)</code></pre>
+            </div>
+            
+            <h3>Learning Rate Schedules</h3>
+            <pre><code># Exponential decay
+initial_lr = 0.1
+lr_schedule = keras.optimizers.schedules.ExponentialDecay(
+    initial_lr,
+    decay_steps=1000,
+    decay_rate=0.96
+)
+
+optimizer = keras.optimizers.Adam(learning_rate=lr_schedule)
+
+# Step decay
+def step_decay(epoch):
+    initial_lr = 0.1
+    drop = 0.5
+    epochs_drop = 10
+    lr = initial_lr * (drop ** (epoch // epochs_drop))
+    return lr
+
+lr_callback = keras.callbacks.LearningRateScheduler(step_decay)
+
+# Cosine decay
+lr_schedule = keras.optimizers.schedules.CosineDecay(
+    initial_learning_rate=0.1,
+    decay_steps=1000
+)</code></pre>
+            
+            <h3>Preventing Overfitting</h3>
+            <div class="example">
+                <pre><code># Technique 1: Dropout
+model.add(keras.layers.Dropout(0.5))
+
+# Technique 2: L2 Regularization
+keras.layers.Dense(
+    64,
+    kernel_regularizer=keras.regularizers.l2(0.01)
+)
+
+# Technique 3: L1 Regularization
+keras.layers.Dense(
+    64,
+    kernel_regularizer=keras.regularizers.l1(0.01)
+)
+
+# Technique 4: L1+L2 (Elastic Net)
+keras.layers.Dense(
+    64,
+    kernel_regularizer=keras.regularizers.l1_l2(l1=0.01, l2=0.01)
+)
+
+# Technique 5: Early Stopping
+keras.callbacks.EarlyStopping(patience=5, restore_best_weights=True)
+
+# Technique 6: Data Augmentation
+data_augmentation = keras.Sequential([
+    keras.layers.RandomFlip("horizontal"),
+    keras.layers.RandomRotation(0.1),
+    keras.layers.RandomZoom(0.1)
+])</code></pre>
+            </div>
+            
+            <h3>Batch Normalization</h3>
+            <pre><code># Add after activation or before
+model = keras.Sequential([
+    keras.layers.Dense(64),
+    keras.layers.BatchNormalization(),
+    keras.layers.Activation('relu'),
+    keras.layers.Dense(10, activation='softmax')
+])
+
+# Benefits: faster training, higher learning rates, regularization</code></pre>
+            
+            <h3>Gradient Clipping</h3>
+            <div class="example">
+                <pre><code># Clip by value
+optimizer = keras.optimizers.Adam(clipvalue=1.0)
+
+# Clip by norm
+optimizer = keras.optimizers.Adam(clipnorm=1.0)
+
+# Useful for RNNs to prevent exploding gradients</code></pre>
+            </div>
+            
+            <div class="tip">
+                <strong>💡 Optimization Quick Tips:</strong><br>
+                • Start with Adam optimizer (lr=0.001)<br>
+                • Use learning rate decay for better convergence<br>
+                • Add Dropout (0.3-0.5) to prevent overfitting<br>
+                • Use BatchNormalization for deeper networks<br>
+                • Monitor val_loss, stop if it increases
+            </div>
+        </div>
+        
+        <div id="examples" class="content-section">
+            <h2>Complete Step-by-Step Examples</h2>
+            
+            <h3>Example 1: Simple Linear Regression</h3>
+            <div class="example">
+                <p><strong>Goal:</strong> Predict y = 2x + 1</p>
+                <pre><code># Step 1: Generate data
+X = np.random.rand(100, 1).astype('float32')
+y = (2 * X + 1 + np.random.randn(100, 1) * 0.1).astype('float32')
+
+# Step 2: Build model
+model = keras.Sequential([
+    keras.layers.Dense(1, input_shape=(1,))
+])
+
+# Step 3: Compile
+model.compile(optimizer='sgd', loss='mse', metrics=['mae'])
+
+# Step 4: Train
+history = model.fit(X, y, epochs=100, verbose=0)
+
+# Step 5: Predict
+test_X = np.array([[0.5]], dtype='float32')
+prediction = model.predict(test_X, verbose=0)
+print(f"Input: 0.5, Prediction: {prediction[0][0]:.2f}")
+print(f"Expected: ~2.0, Got weights: {model.get_weights()}")</code></pre>
+            </div>
+            
+            <h3>Example 2: Binary Classification</h3>
+            <div class="example">
+                <p><strong>Goal:</strong> Classify two classes (0 or 1)</p>
+                <pre><code># Step 1: Generate data
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=1000, n_features=20, 
+                          n_classes=2, random_state=42)
+X = X.astype('float32')
+
+# Step 2: Split data
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Step 3: Build model
+model = keras.Sequential([
+    keras.layers.Dense(64, activation='relu', input_shape=(20,)),
+    keras.layers.Dropout(0.3),
+    keras.layers.Dense(32, activation='relu'),
+    keras.layers.Dropout(0.3),
+    keras.layers.Dense(1, activation='sigmoid')  # Binary output
+])
+
+# Step 4: Compile
+model.compile(
+    optimizer='adam',
+    loss='binary_crossentropy',  # For binary classification
+    metrics=['accuracy', keras.metrics.AUC()]
+)
+
+# Step 5: Train with callbacks
+early_stop = keras.callbacks.EarlyStopping(
+    patience=10, restore_best_weights=True
+)
+
+history = model.fit(
+    X_train, y_train,
+    validation_split=0.2,
+    epochs=100,
+    batch_size=32,
+    callbacks=[early_stop],
+    verbose=0
+)
+
+# Step 6: Evaluate
+test_loss, test_acc, test_auc = model.evaluate(X_test, y_test, verbose=0)
+print(f"Test Accuracy: {test_acc:.4f}")
+print(f"Test AUC: {test_auc:.4f}")
+
+# Step 7: Predict probabilities
+predictions = model.predict(X_test[:5], verbose=0)
+print("Probabilities:", predictions.flatten())
+print("Classes:", (predictions > 0.5).astype(int).flatten())</code></pre>
+            </div>
+            
+            <h3>Example 3: Multi-Class Classification (MNIST)</h3>
+            <div class="example">
+                <p><strong>Goal:</strong> Recognize handwritten digits (0-9)</p>
+                <pre><code># Step 1: Load data
+(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+
+# Step 2: Preprocess
+x_train = x_train.reshape(-1, 784).astype('float32') / 255
+x_test = x_test.reshape(-1, 784).astype('float32') / 255
+
+# Step 3: Build model
+model = keras.Sequential([
+    keras.layers.Dense(128, activation='relu', input_shape=(784,)),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dropout(0.3),
+    keras.layers.Dense(64, activation='relu'),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dropout(0.3),
+    keras.layers.Dense(10, activation='softmax')  # 10 classes
+])
+
+# Step 4: Compile
+model.compile(
+    optimizer=keras.optimizers.Adam(learning_rate=0.001),
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# Step 5: Setup callbacks
+callbacks = [
+    keras.callbacks.EarlyStopping(patience=5, restore_best_weights=True),
+    keras.callbacks.ReduceLROnPlateau(factor=0.5, patience=3),
+    keras.callbacks.ModelCheckpoint('best_mnist.h5', save_best_only=True)
+]
+
+# Step 6: Train
+history = model.fit(
+    x_train, y_train,
+    validation_split=0.15,
+    epochs=30,
+    batch_size=128,
+    callbacks=callbacks
+)
+
+# Step 7: Evaluate
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f"Test accuracy: {test_acc:.4f}")
+
+# Step 8: Visualize predictions
+predictions = model.predict(x_test[:10])
+predicted_digits = np.argmax(predictions, axis=1)
+print("Predicted:", predicted_digits)
+print("Actual:", y_test[:10])</code></pre>
+            </div>
+            
+            <h3>Example 4: CNN for Image Classification</h3>
+            <div class="example">
+                <p><strong>Goal:</strong> Classify CIFAR-10 images</p>
+                <pre><code># Step 1: Load CIFAR-10
+(x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
+
+# Step 2: Preprocess
+x_train = x_train.astype('float32') / 255
+x_test = x_test.astype('float32') / 255
+y_train = y_train.flatten()
+y_test = y_test.flatten()
+
+# Step 3: Data augmentation
+data_augmentation = keras.Sequential([
+    keras.layers.RandomFlip("horizontal"),
+    keras.layers.RandomRotation(0.1),
+    keras.layers.RandomZoom(0.1)
+])
+
+# Step 4: Build CNN
+model = keras.Sequential([
+    data_augmentation,
+    
+    keras.layers.Conv2D(32, 3, padding='same', activation='relu', 
+                        input_shape=(32, 32, 3)),
+    keras.layers.BatchNormalization(),
+    keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPooling2D(2),
+    keras.layers.Dropout(0.2),
+    
+    keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
+    keras.layers.BatchNormalization(),
+    keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPooling2D(2),
+    keras.layers.Dropout(0.3),
+    
+    keras.layers.Conv2D(128, 3, padding='same', activation='relu'),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPooling2D(2),
+    keras.layers.Dropout(0.4),
+    
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(10, activation='softmax')
+])
+
+# Step 5: Compile
+model.compile(
+    optimizer=keras.optimizers.Adam(learning_rate=0.001),
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# Step 6: Train
+history = model.fit(
+    x_train, y_train,
+    validation_split=0.1,
+    epochs=50,
+    batch_size=64,
+    callbacks=[
+        keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True),
+        keras.callbacks.ReduceLROnPlateau(factor=0.5, patience=5)
+    ]
+)
+
+# Step 7: Evaluate
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f"Test accuracy: {test_acc:.4f}")</code></pre>
+            </div>
+            
+            <h3>Example 5: Time Series Forecasting with LSTM</h3>
+            <div class="example">
+                <p><strong>Goal:</strong> Predict next values in a sequence</p>
+                <pre><code># Step 1: Generate time series data
+time_steps = 1000
+t = np.linspace(0, 100, time_steps)
+series = np.sin(t) + np.random.randn(time_steps) * 0.1
+
+# Step 2: Create sequences
+def create_sequences(data, seq_length):
+    X, y = [], []
+    for i in range(len(data) - seq_length):
+        X.append(data[i:i+seq_length])
+        y.append(data[i+seq_length])
+    return np.array(X), np.array(y)
+
+seq_length = 50
+X, y = create_sequences(series, seq_length)
+X = X.reshape(-1, seq_length, 1).astype('float32')
+y = y.astype('float32')
+
+# Step 3: Split data
+split = int(0.8 * len(X))
+X_train, X_test = X[:split], X[split:]
+y_train, y_test = y[:split], y[split:]
+
+# Step 4: Build LSTM model
+model = keras.Sequential([
+    keras.layers.LSTM(64, return_sequences=True, input_shape=(seq_length, 1)),
+    keras.layers.Dropout(0.2),
+    keras.layers.LSTM(32),
+    keras.layers.Dropout(0.2),
+    keras.layers.Dense(16, activation='relu'),
+    keras.layers.Dense(1)
+])
+
+# Step 5: Compile
+model.compile(
+    optimizer=keras.optimizers.Adam(learning_rate=0.001),
+    loss='mse',
+    metrics=['mae']
+)
+
+# Step 6: Train
+history = model.fit(
+    X_train, y_train,
+    validation_data=(X_test, y_test),
+    epochs=50,
+    batch_size=32,
+    callbacks=[keras.callbacks.EarlyStopping(patience=10)]
+)
+
+# Step 7: Predict
+predictions = model.predict(X_test[:10])
+print("Predictions:", predictions.flatten()[:5])
+print("Actual:", y_test[:5])</code></pre>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Example Best Practices:</strong><br>
+                • Always split train/validation/test (60/20/20 or 70/15/15)<br>
+                • Normalize data before training<br>
+                • Use data augmentation for images<br>
+                • Monitor validation metrics to prevent overfitting<br>
+                • Save best model with ModelCheckpoint<br>
+                • Start simple, add complexity if needed
+            </div>
+        </div>
+        
+        <div id="debugging" class="content-section">
+            <h2>Debugging & Troubleshooting</h2>
+            
+            <h3>Common Error 1: Shape Mismatch</h3>
+            <div class="example">
+                <pre><code># Error: Input shape doesn't match layer
+# Check your data shape
+print("Input shape:", x_train.shape)
+print("Model expects:", model.input_shape)
+
+# Fix: Reshape data
+x_train = x_train.reshape(-1, 784)  # Flatten to 1D
+
+# Or adjust model input
+model = keras.Sequential([
+    keras.layers.Flatten(input_shape=(28, 28)),
+    keras.layers.Dense(128)
+])</code></pre>
+            </div>
+            
+            <h3>Common Error 2: Loss is NaN</h3>
+            <pre><code># Causes and solutions:
+# 1. Learning rate too high
+optimizer = keras.optimizers.Adam(learning_rate=0.0001)  # Reduce LR
+
+# 2. Data not normalized
+x_train = x_train / 255.0  # Normalize to [0, 1]
+
+# 3. Exploding gradients (for RNNs)
+optimizer = keras.optimizers.Adam(clipnorm=1.0)
+
+# 4. Wrong activation for output
+# Use sigmoid for binary, softmax for multi-class</code></pre>
+            
+            <h3>Common Error 3: Model Not Learning</h3>
+            <div class="example">
+                <pre><code># Symptom: Loss doesn't decrease
+# Solutions:
+
+# 1. Check if data is shuffled
+history = model.fit(x_train, y_train, shuffle=True)
+
+# 2. Increase learning rate
+optimizer = keras.optimizers.Adam(learning_rate=0.01)
+
+# 3. Check if labels are correct
+print("Unique labels:", np.unique(y_train))
+print("Expected:", list(range(num_classes)))
+
+# 4. Simplify model first
+model = keras.Sequential([
+    keras.layers.Dense(64, activation='relu', input_shape=(784,)),
+    keras.layers.Dense(10, activation='softmax')
+])
+
+# 5. Verify loss function matches problem
+# Binary: binary_crossentropy
+# Multi-class integer labels: sparse_categorical_crossentropy
+# Multi-class one-hot: categorical_crossentropy</code></pre>
+            </div>
+            
+            <h3>Common Error 4: Overfitting</h3>
+            <pre><code># Symptom: Train acc high, val acc low
+# Solutions:
+
+# 1. Add dropout
+model.add(keras.layers.Dropout(0.5))
+
+# 2. Add L2 regularization
+keras.layers.Dense(64, kernel_regularizer=keras.regularizers.l2(0.01))
+
+# 3. Get more data or use data augmentation
+# 4. Use early stopping
+keras.callbacks.EarlyStopping(patience=5)
+
+# 5. Reduce model complexity
+# Fewer layers or fewer neurons per layer</code></pre>
+            
+            <h3>Common Error 5: Underfitting</h3>
+            <div class="example">
+                <pre><code># Symptom: Both train and val acc low
+# Solutions:
+
+# 1. Increase model capacity
+model.add(keras.layers.Dense(256, activation='relu'))
+
+# 2. Train longer
+model.fit(x_train, y_train, epochs=100)
+
+# 3. Remove regularization
+# Remove or reduce dropout and L2
+
+# 4. Check data preprocessing
+# Make sure data is properly normalized
+
+# 5. Use better architecture
+# For images: use CNN
+# For sequences: use LSTM/GRU</code></pre>
+            </div>
+            
+            <h3>Debugging Tools</h3>
+            <pre><code># 1. Check model summary
+model.summary()
+
+# 2. Visualize training history
+import matplotlib.pyplot as plt
+plt.plot(history.history['loss'], label='train')
+plt.plot(history.history['val_loss'], label='val')
+plt.legend()
+plt.show()
+
+# 3. Check layer outputs
+intermediate_model = keras.Model(
+    inputs=model.input,
+    outputs=model.layers[2].output
+)
+intermediate_output = intermediate_model.predict(x_test[:1])
+print(intermediate_output.shape)
+
+# 4. Monitor gradients
+tape = tf.GradientTape()
+# ... compute gradients
+print("Gradient norms:", [tf.norm(g) for g in gradients])
+
+# 5. Use TensorBoard
+tensorboard = keras.callbacks.TensorBoard(log_dir='./logs')
+# Then run: tensorboard --logdir=./logs</code></pre>
+            
+            <div class="tip">
+                <strong>💡 Quick Debugging Checklist:</strong><br>
+                1. Print shapes: input, output, model.summary()<br>
+                2. Check data: min, max, mean, NaN values<br>
+                3. Verify labels: correct format and range<br>
+                4. Monitor loss: should decrease steadily<br>
+                5. Compare train/val metrics: check overfitting<br>
+                6. Start simple: basic model → add complexity<br>
+                7. Use callbacks: EarlyStopping, ReduceLROnPlateau
+            </div>
+        </div>
+        
+        <div id="bestpractices" class="content-section">
+            <h2>Best Practices & Pro Tips</h2>
+            
+            <h3>Data Preparation Best Practices</h3>
+            <div class="example">
+                <pre><code># Always normalize/standardize input
+# For images (0-255)
+x = x / 255.0
+
+# For general data (standardization)
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+x_train = scaler.fit_transform(x_train)
+x_test = scaler.transform(x_test)  # Use same scaler!
+
+# Split data properly: 60% train, 20% val, 20% test
+# Or: 70% train, 15% val, 15% test</code></pre>
+            </div>
+            
+            <h3>Model Architecture Tips</h3>
+            <pre><code># Start simple, add complexity gradually
+# Bad: Start with 10 layers
+# Good: Start with 2-3 layers, increase if needed
+
+# Use BatchNormalization for deep networks
+model.add(keras.layers.Dense(64))
+model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.Activation('relu'))
+
+# Dropout placement: after activation
+model.add(keras.layers.Dense(64, activation='relu'))
+model.add(keras.layers.Dropout(0.5))
+
+# Output layer activation:
+# Binary classification: sigmoid (1 unit)
+# Multi-class: softmax (n units)
+# Regression: none or linear (1 or n units)</code></pre>
+            
+            <h3>Hyperparameter Selection</h3>
+            <div class="example">
+                <pre><code># Learning rate guidelines:
+# Adam: 0.001 (default, usually good)
+# SGD: 0.01 to 0.1
+# Too high: loss oscillates or NaN
+# Too low: very slow convergence
+
+# Batch size guidelines:
+# Small (16-32): noisy gradients, good regularization
+# Medium (64-128): good balance
+# Large (256+): faster but may hurt generalization
+
+# Epochs:
+# Use EarlyStopping, don't set exact number
+keras.callbacks.EarlyStopping(patience=10)
+
+# Dropout rate:
+# Light: 0.1-0.3
+# Moderate: 0.3-0.5
+# Heavy: 0.5-0.7
+# Don't use >0.7</code></pre>
+            </div>
+            
+            <h3>Training Best Practices</h3>
+            <pre><code># Always use these callbacks:
+callbacks = [
+    # Stop when no improvement
+    keras.callbacks.EarlyStopping(
+        patience=10,
+        restore_best_weights=True
+    ),
+    # Save best model
+    keras.callbacks.ModelCheckpoint(
+        'best_model.h5',
+        save_best_only=True
+    ),
+    # Reduce LR when plateauing
+    keras.callbacks.ReduceLROnPlateau(
+        factor=0.5,
+        patience=5
+    )
+]
+
+# Monitor both training and validation metrics
+history = model.fit(
+    x_train, y_train,
+    validation_data=(x_val, y_val),  # Always use validation!
+    callbacks=callbacks
+)</code></pre>
+            
+            <h3>Performance Optimization</h3>
+            <div class="example">
+                <pre><code># Use tf.data for better performance
+dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+dataset = dataset.shuffle(10000).batch(32).prefetch(tf.data.AUTOTUNE)
+
+# Mixed precision training (faster on GPU)
+keras.mixed_precision.set_global_policy('mixed_float16')
+
+# Use GPU if available
+print("GPUs:", tf.config.list_physical_devices('GPU'))
+
+# Limit GPU memory growth
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    tf.config.experimental.set_memory_growth(gpus[0], True)</code></pre>
+            </div>
+            
+            <h3>Model Evaluation Tips</h3>
+            <pre><code># Don't just look at accuracy!
+# For imbalanced data, check:
+from sklearn.metrics import classification_report, confusion_matrix
+
+y_pred = model.predict(x_test)
+y_pred_classes = np.argmax(y_pred, axis=1)
+
+# Detailed metrics
+print(classification_report(y_test, y_pred_classes))
+
+# Confusion matrix
+cm = confusion_matrix(y_test, y_pred_classes)
+print(cm)
+
+# For binary classification, check AUC-ROC
+model.compile(
+    optimizer='adam',
+    loss='binary_crossentropy',
+    metrics=['accuracy', keras.metrics.AUC()]
+)</code></pre>
+            
+            <h3>Production Deployment</h3>
+            <div class="example">
+                <pre><code># Save model in production format
+model.save('my_model.keras')  # New format
+
+# Or SavedModel format
+model.save('saved_model/')
+
+# Export to TensorFlow Lite (mobile/embedded)
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+with open('model.tflite', 'wb') as f:
+    f.write(tflite_model)
+
+# Load and use in production
+model = keras.models.load_model('my_model.keras')
+predictions = model.predict(new_data)</code></pre>
+            </div>
+            
+            <div class="tip">
+                <strong>💡 Golden Rules:</strong><br>
+                1. <strong>Always</strong> normalize your data<br>
+                2. <strong>Always</strong> use validation set<br>
+                3. <strong>Always</strong> use EarlyStopping<br>
+                4. <strong>Always</strong> save your best model<br>
+                5. <strong>Start simple</strong>, then increase complexity<br>
+                6. <strong>Monitor</strong> val_loss more than val_accuracy<br>
+                7. <strong>Never</strong> touch test set until final evaluation<br>
+                8. <strong>Experiment</strong> systematically (change one thing)<br>
+                9. <strong>Document</strong> what works and what doesn't<br>
+                10. <strong>Debug</strong> with small data first
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Common Mistakes to Avoid:</strong><br>
+                ✗ Not normalizing data<br>
+                ✗ No validation set (overfitting risk)<br>
+                ✗ Looking at test set during development<br>
+                ✗ Too complex model from start<br>
+                ✗ Not using callbacks<br>
+                ✗ Wrong loss function for the task<br>
+                ✗ Forgetting to shuffle training data<br>
+                ✗ Not checking for data leakage<br>
+                ✗ Ignoring class imbalance<br>
+                ✗ Training for too long without early stopping
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active from all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight active button
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
